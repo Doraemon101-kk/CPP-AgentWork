@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.16)
+project(repair_demo LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+add_executable(calculator main.cpp calculator.cpp)
+add_executable(test_calculator test_calculator.cpp calculator.cpp)
+enable_testing()
+add_test(NAME arithmetic COMMAND test_calculator)
