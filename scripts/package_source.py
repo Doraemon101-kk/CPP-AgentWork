@@ -10,10 +10,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-FILES = {'README.md', '使用说明.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'AI_DISCLOSURE.md', '.gitignore', '.gitattributes', 'CMakeLists.txt', 'build.ps1', 'pilot.ps1', 'start-model.ps1', 'run-agent.ps1', 'tools.hpp', 'Start.cmd'}
+FILES = {'README.md', '使用说明.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'AI_DISCLOSURE.md', '.gitignore', '.gitattributes', 'CMakeLists.txt', 'build.ps1', 'pilot.ps1', 'start-model.ps1', 'run-agent.ps1', 'Start.cmd'}
 DIRECTORIES = {'src', 'include', 'cmake', 'scripts', 'tests', 'fixtures', 'docs', 'examples', 'third_party', '.github', 'assets', 'launcher'}
-DENIED_PARTS = {'.git', '.agent_data', '.runtime', 'models', '__pycache__', '.vs', '.vscode', 'dist', 'release-check'}
+DENIED_PARTS = {'.git', '.agent_data', '.runtime', 'models', '__pycache__', '.vs', '.vscode', 'dist', 'release-check', 'tmp', 'temp'}
+ASSET_FILES = {'assets/README.md', 'assets/app.ico', 'assets/icon-pixel.png'}
 DENIED_EXTENSIONS = {'.exe', '.dll', '.obj', '.o', '.a', '.lib', '.pdb', '.ilk', '.log', '.pyc', '.pyo', '.gguf', '.safetensors', '.pt', '.pth', '.zip', '.pem', '.key', '.pfx'}
+DENIED_EXTENSIONS.update({'.tmp', '.bak', '.orig'})
 SECRETS = re.compile(r'(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,}|sk-[A-Za-z0-9_-]{30,}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)')
 PRIVATE_PATHS = re.compile(r'(?:\b[A-Za-z]:[\\/]+[^\s"\r\n]+|/(?:home|Users)/[^\s"\r\n]+)', re.I)
 
@@ -28,9 +30,10 @@ def export_files():
         if not folder.is_dir(): raise RuntimeError('Missing release directory: ' + name)
         for file in sorted(folder.rglob('*')):
             relative = file.relative_to(ROOT)
+            if name == 'assets' and relative.as_posix() not in ASSET_FILES: continue
             if file.is_symlink(): raise RuntimeError('Symlink in source export: ' + relative.as_posix())
             if any(part in DENIED_PARTS or part.startswith('build') for part in relative.parts[1:-1]): continue
-            if not file.is_file() or file.suffix.lower() in DENIED_EXTENSIONS or file.name.startswith('.env'): continue
+            if not file.is_file() or file.suffix.lower() in DENIED_EXTENSIONS or file.name.startswith('.env') or file.name.endswith('~'): continue
             files.append(file)
     for file in files:
         relative = file.relative_to(ROOT)
