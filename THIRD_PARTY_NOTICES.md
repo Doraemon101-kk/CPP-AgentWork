@@ -15,6 +15,26 @@ No external dependency download is needed to compile the vendored JSON library.
 
 ## Separately installed software
 
+### Statically linked runtime in the MinGW portable binary
+
+The Windows portable binary built with GCC 9.2 includes GCC/libstdc++ runtime,
+MinGW-w64 runtime and winpthreads code. Unmodified notices distributed with
+that toolchain are included in `third_party/runtime/`:
+
+- `COPYING3-gcc-tdm.txt`: GNU GPL version 3.
+- `COPYING.RUNTIME-gcc-tdm.txt`: GCC Runtime Library Exception version 3.1.
+- `COPYING.MinGW-w64-runtime.txt`: MinGW-w64 runtime copyright and licenses.
+- `COPYING.winpthreads.txt`: winpthreads license notices.
+- `COPYING.default-manifest.txt`: default manifest notice.
+
+These are separate from the project's original-code MIT license. Source
+projects: [GCC](https://gcc.gnu.org/), [MinGW-w64](https://www.mingw-w64.org/).
+The portable ZIP carries these notices alongside the binary; no compiler
+installation or model weights are bundled. Distributors using a different
+toolchain should include the notices appropriate to their binary.
+
+### External tools
+
 Ollama, model weights, CMake, Python and compilers are not included in this
 source distribution. They retain their own licenses. The default model is
 [Qwen3 4B Instruct](https://ollama.com/library/qwen3:4b-instruct-2507-q4_K_M);
