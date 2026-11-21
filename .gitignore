@@ -1,0 +1,40 @@
+# Build outputs and source packages
+/build/
+/build_*/
+/dist/
+/release-check/
+/CMakeFiles/
+/CMakeCache.txt
+/Testing/
+*.exe
+*.dll
+*.obj
+*.o
+*.a
+*.lib
+*.pdb
+*.ilk
+*.zip
+# Private runtime/session/credential material
+/.agent_data/
+/.runtime/
+/models/
+.env
+.env.*
+!.env.example
+*.log
+*.log.*
+*.pem
+*.key
+*.pfx
+*.gguf
+*.safetensors
+*.pt
+*.pth
+# Python/editor/OS caches
+__pycache__/
+*.py[cod]
+.vs/
+.vscode/
+.DS_Store
+Thumbs.db
