@@ -100,13 +100,14 @@ Json project_check(const agent_fs::path& root,const agent_fs::path& build,const 
     };
     if(kind=="configure" || !agent_fs::exists(build/"CMakeCache.txt")) {
         std::vector<std::string> configure={cmake,"-S",root.u8string(),"-B",build.u8string(),
-            "-G",build_config::generator,"-DCMAKE_BUILD_TYPE=" CPPPILOT_CONFIGURATION};
+            "-DCMAKE_BUILD_TYPE=" CPPPILOT_CONFIGURATION};
         const std::string generator=build_config::generator;
+        if(!generator.empty()) {configure.push_back("-G");configure.push_back(generator);}
         if(generator.rfind("Visual Studio",0)==0) {
             if(std::string(build_config::platform).size()) {configure.push_back("-A");configure.push_back(build_config::platform);}
             if(std::string(build_config::toolset).size()) {configure.push_back("-T");configure.push_back(build_config::toolset);}
         } else {
-            configure.push_back(std::string("-DCMAKE_CXX_COMPILER=")+build_config::compiler);
+            if(std::string(build_config::compiler).size()) configure.push_back(std::string("-DCMAKE_CXX_COMPILER=")+build_config::compiler);
             if(std::string(build_config::make_program).size()) configure.push_back(std::string("-DCMAKE_MAKE_PROGRAM=")+build_config::make_program);
         }
         const bool passed=run(configure);
