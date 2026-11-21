@@ -300,7 +300,7 @@ int Workbench::command(const std::string& input) {
 }
 int Workbench::repl() {
     std::cout<<"\n  +----------------------------------------------+\n"
-                "  | CppPilot 0.2 / C++ project workbench        |\n"
+                "  | CppPilot 0.3 / C++ project workbench        |\n"
                 "  | inspect -> propose -> apply -> test -> undo |\n"
                 "  +----------------------------------------------+\n"
              <<"  Project : "<<root_.u8string()<<"\n  Model   : "<<config_.at("model").get<std::string>()
