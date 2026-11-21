@@ -2,7 +2,8 @@ param(
     [string]$Model = "qwen3:4b-instruct-2507-q4_K_M",
     [ValidateRange(1,65535)][int]$Port = 11434,
     [string]$OllamaPath = "",
-    [string]$ModelsDir = ""
+    [string]$ModelsDir = "",
+    [switch]$SkipPull
 )
 $ErrorActionPreference = "Stop"
 $endpoint = "http://127.0.0.1:$Port"
@@ -30,9 +31,10 @@ if (!$ready) {
     }
     if (!$ready) { throw "Ollama failed to start. Inspect $logDir/server-$Port.err.log" }
 }
-if ($installed.models.name -notcontains $Model) {
+if (!$SkipPull -and $installed.models.name -notcontains $Model) {
     Write-Host "Downloading $Model (first run only)..."
     $body = @{ model = $Model; stream = $false } | ConvertTo-Json
     Invoke-RestMethod "$endpoint/api/pull" -Method Post -ContentType "application/json" -Body $body -TimeoutSec 1800 | Out-Null
 }
-Write-Host "Ollama ready at $endpoint; model: $Model"
+if ($SkipPull) { Write-Host "Ollama server ready at $endpoint" }
+else { Write-Host "Ollama ready at $endpoint; model: $Model" }
