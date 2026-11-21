@@ -1,0 +1,52 @@
+cmake_minimum_required(VERSION 3.26)
+project(CppPilot VERSION 0.2.0 LANGUAGES CXX)
+if(NOT WIN32)
+    message(FATAL_ERROR "CppPilot v0.2 supports Windows only (WinHTTP and Windows Job Objects).")
+endif()
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
+    message(FATAL_ERROR "GCC 9+ is required. Select a newer compiler or use MSVC 2022.")
+endif()
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build configuration" FORCE)
+endif()
+file(TO_CMAKE_PATH "${CMAKE_COMMAND}" CPPPILOT_CMAKE)
+file(TO_CMAKE_PATH "${CMAKE_CTEST_COMMAND}" CPPPILOT_CTEST)
+file(TO_CMAKE_PATH "${CMAKE_CXX_COMPILER}" CPPPILOT_COMPILER)
+file(TO_CMAKE_PATH "${CMAKE_MAKE_PROGRAM}" CPPPILOT_MAKE)
+configure_file(cmake/build_config.hpp.in generated/pilot/build_config.hpp @ONLY)
+add_executable(cpp_agent src/main.cpp src/tools.cpp src/agent.cpp
+    src/runtime/model.cpp src/runtime/process.cpp src/runtime/task.cpp
+    src/workspace/common.cpp src/workspace/index.cpp src/workspace/edits.cpp
+    src/app/workbench.cpp src/app/conversation.cpp src/app/context.cpp)
+target_include_directories(cpp_agent PRIVATE include third_party "${CMAKE_CURRENT_BINARY_DIR}/generated")
+target_compile_features(cpp_agent PRIVATE cxx_std_17)
+set_target_properties(cpp_agent PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS OFF
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
+foreach(configuration DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)
+    set_target_properties(cpp_agent PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${configuration} "${CMAKE_CURRENT_BINARY_DIR}/bin")
+endforeach()
+target_compile_definitions(cpp_agent PRIVATE CPPPILOT_CONFIGURATION="$<CONFIG>")
+if(MSVC)
+    target_compile_options(cpp_agent PRIVATE /W4 /utf-8)
+else()
+    target_compile_options(cpp_agent PRIVATE -Wall -Wextra -pedantic)
+endif()
+enable_language(RC)
+file(TO_CMAKE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/assets/app.ico" CPPPILOT_ICON)
+configure_file(cmake/app_icon.rc.in generated/app_icon.rc @ONLY)
+target_sources(cpp_agent PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated/app_icon.rc")
+set_property(SOURCE "${CMAKE_CURRENT_BINARY_DIR}/generated/app_icon.rc" APPEND PROPERTY
+    OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/assets/app.ico")
+target_link_libraries(cpp_agent PRIVATE winhttp shell32 bcrypt)
+include(CTest)
+if(BUILD_TESTING)
+    find_package(Python3 3.9 COMPONENTS Interpreter REQUIRED)
+    add_test(NAME workbench_workflow COMMAND "${CMAKE_COMMAND}" -E env
+        "CPPPILOT_EXE=$<TARGET_FILE:cpp_agent>" "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_workbench.py")
+    add_test(NAME legacy_agent_protocol COMMAND "${CMAKE_COMMAND}" -E env
+        "CPPPILOT_EXE=$<TARGET_FILE:cpp_agent>" "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_agent_protocol.py")
+    add_test(NAME modes_memory_stream_cancel COMMAND "${CMAKE_COMMAND}" -E env
+        "CPPPILOT_EXE=$<TARGET_FILE:cpp_agent>" "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_update.py")
+    set_tests_properties(workbench_workflow legacy_agent_protocol modes_memory_stream_cancel PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" TIMEOUT 180)
+endif()
