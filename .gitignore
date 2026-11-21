@@ -38,3 +38,14 @@ __pycache__/
 .vscode/
 .DS_Store
 Thumbs.db
+# Discarded assets and temporary editor/export files
+/assets/*
+!/assets/README.md
+!/assets/app.ico
+!/assets/icon-pixel.png
+/tmp/
+/temp/
+*.tmp
+*.bak
+*.orig
+*~
