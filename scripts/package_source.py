@@ -10,8 +10,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-FILES = {'README.md', '使用说明.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'AI_DISCLOSURE.md', '.gitignore', '.gitattributes', 'CMakeLists.txt', 'build.ps1', 'pilot.ps1', 'start-model.ps1', 'run-agent.ps1', 'tools.hpp'}
-DIRECTORIES = {'src', 'include', 'cmake', 'scripts', 'tests', 'fixtures', 'docs', 'examples', 'third_party', '.github', 'assets'}
+FILES = {'README.md', '使用说明.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'AI_DISCLOSURE.md', '.gitignore', '.gitattributes', 'CMakeLists.txt', 'build.ps1', 'pilot.ps1', 'start-model.ps1', 'run-agent.ps1', 'tools.hpp', 'Start.cmd'}
+DIRECTORIES = {'src', 'include', 'cmake', 'scripts', 'tests', 'fixtures', 'docs', 'examples', 'third_party', '.github', 'assets', 'launcher'}
 DENIED_PARTS = {'.git', '.agent_data', '.runtime', 'models', '__pycache__', '.vs', '.vscode', 'dist', 'release-check'}
 DENIED_EXTENSIONS = {'.exe', '.dll', '.obj', '.o', '.a', '.lib', '.pdb', '.ilk', '.log', '.pyc', '.pyo', '.gguf', '.safetensors', '.pt', '.pth', '.zip', '.pem', '.key', '.pfx'}
 SECRETS = re.compile(r'(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,}|sk-[A-Za-z0-9_-]{30,}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)')
