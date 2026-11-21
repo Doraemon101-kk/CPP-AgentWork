@@ -1,4 +1,4 @@
-# CppPilot · v0.2.0 实验版
+# CppPilot · v0.3.0 实验版
 
 <img src="assets/icon-pixel.png" width="96" height="96" alt="CppPilot 图标">
 
@@ -6,7 +6,17 @@
 
 本项目以 vibe coding 方式开发，主要实现由 AI 生成和迭代，发起者尚未逐行审阅全部代码。请阅读[AI 开发说明](AI_DISCLOSURE.md)。本版本适合自己的学习与实验项目。
 
-## 环境准备
+## 普通用户：便携版启动
+
+下载 Windows x64 便携包后完整解压，双击 `Start.cmd`。浏览器打开静态 HTML 指南，实际操作仍在终端中进行，没有新增图形工作台。
+
+启动脚本检查程序、Ollama 服务和模型；缺少模型时先询问，再显示下载进度。输入项目路径或按回车体验自带演示。便携包无需 CMake、Python 或编译器即可读代码和生成提案；执行项目构建/测试时仍需 CMake 和对应 C++ 工具链。模型与 Ollama 不包含在便携包内。
+
+关闭指南不影响终端；`/exit` 退出。自定义端口：`powershell -File launcher/Start.ps1 -Port 11435`。仅检查环境：加 `-CheckOnly`，不打开指南、不启动服务、不下载模型。
+
+便携包构建与校验见[便携版发布](docs/便携版发布.md)。
+
+## 源码用户：环境准备
 
 - Windows 10/11 x64，PowerShell 5.1 或 7。
 - [CMake](https://cmake.org/download/) 3.26+，加入 PATH。
